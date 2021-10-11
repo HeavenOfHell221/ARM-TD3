@@ -26,12 +26,29 @@ DicomViewer::DicomViewer(QWidget *parent)
   window_center_slider = new DoubleSlider("Window center", -1000.0, 1000.0);
   window_width_slider = new DoubleSlider("Window width", 1.0, 5000.0);
   gl_widget = new GLWidget();
-  layout->addWidget(alpha_slider, 0, 0, 1, 2);
-  layout->addWidget(slice_slider, 1, 0, 1, 2);
-  layout->addWidget(window_center_slider, 2, 0, 1, 2);
-  layout->addWidget(window_width_slider, 3, 0, 1, 2);
-  layout->addWidget(img_label, 4, 0, 1, 1);
-  layout->addWidget(gl_widget, 4, 1, 1, 1);
+
+  display_2d_image = new CheckBox("test", "Display 2D image");
+  display_3d_image = new CheckBox("test", "Display 3D image");
+  
+  highlight_active_layer = new CheckBox("test", "Highlight active layer");
+  hide_layers_below = new CheckBox("test", "Hide layers below");
+  hide_layers_above = new CheckBox("test", "Hide layers above");
+
+  layout->addWidget(alpha_slider, 0, 0, 1, 3);
+  layout->addWidget(slice_slider, 1, 0, 1, 3);
+  layout->addWidget(window_center_slider, 2, 0, 1, 3);
+  layout->addWidget(window_width_slider, 3, 0, 1, 3);
+
+  layout->addWidget(img_label, 4, 1, 6, 1);
+  layout->addWidget(gl_widget, 4, 2, 6, 1);
+
+  layout->addWidget(display_2d_image, 4, 0, 1, 1);
+  layout->addWidget(display_3d_image, 5, 0, 1, 1);
+
+  layout->addWidget(highlight_active_layer, 6, 0, 1, 1);
+  layout->addWidget(hide_layers_below, 7, 0, 1, 1);
+  layout->addWidget(hide_layers_above, 8, 0, 1, 1);
+
   widget->setLayout(layout);
   // Setting menu
   QMenu *file_menu = menuBar()->addMenu("&File");

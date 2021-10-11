@@ -31,8 +31,8 @@ SOURCES += \
         double_slider.cpp \
         volumic_data.cpp \
         glwidget.cpp \
-        int_slider.cpp
-
+        int_slider.cpp \
+        checkbox.cpp
 
 HEADERS += \
         dicom_viewer.h \
@@ -40,7 +40,8 @@ HEADERS += \
         double_slider.h \
         volumic_data.h \
         glwidget.h \
-        int_slider.h
+        int_slider.h \
+        checkbox.h
 
 LIBS += \
         -ldcmdata \

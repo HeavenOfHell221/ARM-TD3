@@ -14,6 +14,7 @@
 #include "glwidget.h"
 #include "image_label.h"
 #include "int_slider.h"
+#include "checkbox.h"
 
 class DicomViewer : public QMainWindow {
   Q_OBJECT
@@ -40,6 +41,13 @@ private:
   DoubleSlider *alpha_slider;
   DoubleSlider *window_center_slider;
   DoubleSlider *window_width_slider;
+  
+  CheckBox *display_2d_image;
+  CheckBox *display_3d_image;
+  
+  CheckBox *highlight_active_layer;
+  CheckBox *hide_layers_below;
+  CheckBox *hide_layers_above;
 
   /// The area in which the image is shown
   ImageLabel *img_label;
