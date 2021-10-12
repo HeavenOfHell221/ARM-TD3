@@ -313,21 +313,17 @@ void DicomViewer::onWindowWidthChange(double new_window_width) {
 }
 
 void DicomViewer::on2dDisplayStateChange(int state) {
-  if (state >= 1) {
-    //layout->removeWidget(img_label);
+  if (state >= 1)
     img_label->setVisible(false);
-  } else {
-    //layout->addWidget(img_label, 4, 1, 6, 1);
+  else
     img_label->setVisible(true);
-  }
 }
 
 void DicomViewer::on3dDisplayStateChange(int state) {
-  if (state >= 1) {
+  if (state >= 1)
     gl_widget->setVisible(false);
-  } else {
+  else
     gl_widget->setVisible(true);
-  }
 }
 
 DcmDataset *DicomViewer::getDataset() {
