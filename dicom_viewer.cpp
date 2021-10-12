@@ -27,8 +27,8 @@ DicomViewer::DicomViewer(QWidget *parent)
   window_width_slider = new DoubleSlider("Window width", 1.0, 5000.0);
   gl_widget = new GLWidget();
 
-  display_2d_image = new CheckBox("test", "Display 2D image");
-  display_3d_image = new CheckBox("test", "Display 3D image");
+  hide_2d_image = new CheckBox("test", "Hide 2D image");
+  hide_3d_image = new CheckBox("test", "Hide 3D image");
   
   highlight_active_layer = new CheckBox("test", "Highlight active layer");
   hide_layers_below = new CheckBox("test", "Hide layers below");
@@ -42,8 +42,8 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(img_label, 4, 1, 6, 1);
   layout->addWidget(gl_widget, 4, 2, 6, 1);
 
-  layout->addWidget(display_2d_image, 4, 0, 1, 1);
-  layout->addWidget(display_3d_image, 5, 0, 1, 1);
+  layout->addWidget(hide_2d_image, 4, 0, 1, 1);
+  layout->addWidget(hide_3d_image, 5, 0, 1, 1);
 
   layout->addWidget(highlight_active_layer, 6, 0, 1, 1);
   layout->addWidget(hide_layers_below, 7, 0, 1, 1);
@@ -72,6 +72,13 @@ DicomViewer::DicomViewer(QWidget *parent)
           SLOT(onWindowCenterChange(double)));
   connect(window_width_slider, SIGNAL(valueChanged(double)), this,
           SLOT(onWindowWidthChange(double)));
+
+  //CheckBox connection
+  connect(hide_2d_image, SIGNAL(stateChanged(int)), this,
+          SLOT(on2dDisplayStateChange(int)));
+  connect(hide_3d_image, SIGNAL(stateChanged(int)), this,
+          SLOT(on3dDisplayStateChange(int)));
+
 
   // Codec registration
   DcmRLEDecoderRegistration::registerCodecs();
@@ -303,6 +310,24 @@ void DicomViewer::onWindowCenterChange(double new_window_center) {
 void DicomViewer::onWindowWidthChange(double new_window_width) {
   (void)new_window_width;
   updateImage();
+}
+
+void DicomViewer::on2dDisplayStateChange(int state) {
+  if (state >= 1) {
+    //layout->removeWidget(img_label);
+    img_label->setVisible(false);
+  } else {
+    //layout->addWidget(img_label, 4, 1, 6, 1);
+    img_label->setVisible(true);
+  }
+}
+
+void DicomViewer::on3dDisplayStateChange(int state) {
+  if (state >= 1) {
+    gl_widget->setVisible(false);
+  } else {
+    gl_widget->setVisible(true);
+  }
 }
 
 DcmDataset *DicomViewer::getDataset() {

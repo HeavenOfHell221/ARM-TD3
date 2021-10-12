@@ -14,11 +14,11 @@ public:
 
 public slots:
 
-    void setValue(bool new_value);
-    void onValueChange(bool new_value);
+    void setValue(int new_value);
+    void onValueChange(int new_value);
 
 signals:
-  void valueChanged(bool new_value);
+  void stateChanged(int new_value);
 
 private:
   QLayout *layout;

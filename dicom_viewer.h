@@ -33,6 +33,9 @@ public slots:
   void onWindowCenterChange(double new_window_center);
   void onWindowWidthChange(double new_window_width);
 
+  void on2dDisplayStateChange(int state);
+  void on3dDisplayStateChange(int state);
+
 private:
   QWidget *widget;
   QGridLayout *layout;
@@ -42,8 +45,8 @@ private:
   DoubleSlider *window_center_slider;
   DoubleSlider *window_width_slider;
   
-  CheckBox *display_2d_image;
-  CheckBox *display_3d_image;
+  CheckBox *hide_2d_image;
+  CheckBox *hide_3d_image;
   
   CheckBox *highlight_active_layer;
   CheckBox *hide_layers_below;
