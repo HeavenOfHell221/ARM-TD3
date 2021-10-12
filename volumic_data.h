@@ -2,6 +2,7 @@
 #define VOLUMIC_DATA_H
 
 #include <vector>
+#include <cstdint>
 
 class VolumicData {
 public:
@@ -9,7 +10,7 @@ public:
   // - column by column
   // - line by line
   // - slice by slice
-  std::vector<unsigned char> data;
+  std::vector<uint16_t> data;
 
   int width;
   int height;
@@ -29,7 +30,7 @@ public:
 
   unsigned char getValue(int col, int row, int layer);
 
-  void setLayer(unsigned char *layer_data, int layer);
+  void setLayer(uint16_t *layer_data, int layer);
 };
 
 #endif // VOLUMIC_DATA_H

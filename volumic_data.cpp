@@ -5,6 +5,7 @@
 VolumicData::VolumicData()
     : width(-1), height(-1), depth(-1), pixel_width(-1), pixel_height(-1),
       slice_spacing(0) {}
+
 VolumicData::VolumicData(int W, int H, int D)
     : data(W * H * D), width(W), height(H), depth(D) {}
 
@@ -19,7 +20,7 @@ unsigned char VolumicData::getValue(int col, int row, int layer) {
   return data[col + row * width + layer * width * height];
 }
 
-void VolumicData::setLayer(unsigned char *layer_data, int layer) {
+void VolumicData::setLayer(uint16_t *layer_data, int layer) {
   if (layer >= depth)
     throw std::out_of_range(
         "Layer " + std::to_string(layer) +
