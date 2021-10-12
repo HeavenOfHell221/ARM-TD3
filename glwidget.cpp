@@ -54,7 +54,8 @@ void GLWidget::updateDisplayPoints() {
   display_points.reserve(idx_end - idx_start);
   // Importing points
   for (int idx = idx_start; idx < idx_end; idx++) {
-    double c = volumic_data->data[idx] / 255.0;
+    double c = volumic_data->data[idx];
+
     if (c > 0 || !hide_empty_points) {
       DrawablePoint p;
       p.c = c;

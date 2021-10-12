@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <cstdint>
 
 #include <dcmtk/dcmdata/dctk.h>
 #include <dcmtk/dcmimgle/dcmimage.h>

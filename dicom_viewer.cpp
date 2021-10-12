@@ -406,26 +406,51 @@ void DicomViewer::updateImage() {
 void DicomViewer::updateVolumicData() {
   // Building a buffer to store each layer data
   int buffer_size = image->getWidth() * image->getHeight();
-  unsigned char buffer[buffer_size];
+  uint16_t buffer[buffer_size];
   // Getting default window used
   double window_center = window_center_slider->value();
   double window_width = window_width_slider->value();
   // Building a VolumicData object with appropriate dimensions
-  std::unique_ptr<VolumicData> new_data(new VolumicData(
-      image->getWidth(), image->getHeight(), max_instance - min_instance + 1));
+  //std::unique_ptr<VolumicData> new_data(new VolumicData(image->getWidth(), image->getHeight(), max_instance - min_instance + 1, getWindowMin(), getWindowMax()));
+  std::unique_ptr<VolumicData> new_data(new VolumicData(image->getWidth(), image->getHeight(), max_instance - min_instance + 1));
+
   for (const auto &entry : active_files) {
     DicomImage *dicom = loadDicomImage(entry.second->getDataset());
-    dicom->setWindow(window_center, window_width);
+    //dicom->setWindow(window_center, window_width);
+    dicom->setNoVoiTransformation();
     int bits_per_pixel = 8;
     int layer = entry.first;
-    int status =
-        dicom->getOutputData((void *)buffer, buffer_size, bits_per_pixel);
+    int status = dicom->getOutputData((void *)buffer, buffer_size, bits_per_pixel);
     delete (dicom);
     if (!status) {
       QMessageBox::critical(this, "Failed update volumic data",
                             "getOutputData failed");
       continue;
     }
+
+	double win_min = getWindowMin();
+	double win_max = getWindowMax();
+	double win_range = win_max - win_min;
+
+	//std::cout << win_min << ", " << win_max << ", " << window_center << ", " << window_width << std::endl;
+
+	double offset = pow(2, 15) - getIntercept();
+
+	for(int i = 0; i < buffer_size; ++i) {
+		double v = buffer[i] - offset;
+		// std::cout << i << ": " << v << std::endl;
+		double c;
+
+		if(v < win_min)
+			c = 0;
+		else if(v > win_max)
+			c = 1;
+		else
+			c = (v - win_min) / win_range;
+
+		buffer[i] = c;
+	} 
+
     new_data->setLayer(buffer, layer - min_instance);
   }
   new_data->pixel_width = pixel_width;
