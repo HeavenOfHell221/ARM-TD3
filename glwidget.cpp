@@ -52,9 +52,13 @@ void GLWidget::updateDisplayPoints() {
   int idx_start = 0;
   int idx_end = W * H * D;
   display_points.reserve(idx_end - idx_start);
+
+  double win_min = win_center - (win_width/2);
+  double win_max = win_center + (win_width/2);
+
   // Importing points
   for (int idx = idx_start; idx < idx_end; idx++) {
-    double c = volumic_data->data[idx];
+    double c = volumic_data->manualWindowHandling(volumic_data->data[idx], win_min, win_max, -1024);
 
     if (c > 0 || !hide_empty_points) {
       DrawablePoint p;
@@ -161,4 +165,12 @@ double GLWidget::modifiedDelta(double delta) {
     return 10 * delta;
   }
   return delta;
+}
+
+void GLWidget::setWinCenter(double new_value) {
+  win_center = new_value;
+}
+
+void GLWidget::setWinWidth(double new_value) {
+  win_width = new_value;
 }

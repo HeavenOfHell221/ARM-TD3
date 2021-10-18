@@ -303,13 +303,15 @@ void DicomViewer::onSliceChange(int new_slice) {
 }
 
 void DicomViewer::onWindowCenterChange(double new_window_center) {
-  (void)new_window_center;
+  //(void)new_window_center;
   updateImage();
+  gl_widget->setWinCenter(new_window_center);
 }
 
 void DicomViewer::onWindowWidthChange(double new_window_width) {
-  (void)new_window_width;
+  //(void)new_window_width;
   updateImage();
+  gl_widget->setWinWidth(new_window_width);
 }
 
 void DicomViewer::on2dDisplayStateChange(int state) {

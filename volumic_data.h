@@ -34,7 +34,7 @@ public:
   unsigned char getValue(int col, int row, int layer);
 
   void setLayer(uint16_t *layer_data, int layer, double win_min, double win_max, double intercept);
-  void manualWindowHandling(uint16_t *layer_data, int size, double win_min, double win_max, double intercept);
+  double manualWindowHandling(double value, double win_min, double win_max, double intercept);
 
 };
 

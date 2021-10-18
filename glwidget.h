@@ -23,6 +23,9 @@ public:
 
   void updateVolumicData(std::unique_ptr<VolumicData> new_data);
 
+  void setWinCenter(double new_value);
+  void setWinWidth(double new_value);
+
 public slots:
   void setAlpha(double new_alpha);
 
@@ -58,6 +61,9 @@ protected:
   QMatrix4x4 transform;
 
   ViewType view_type;
+
+  double win_center;
+  double win_width;
 
   /// When enabled, all points with a drawing color = 0 are hidden
   bool hide_empty_points;

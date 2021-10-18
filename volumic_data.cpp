@@ -26,28 +26,23 @@ void VolumicData::setLayer(uint16_t *layer_data, int layer, double win_min, doub
         "Layer " + std::to_string(layer) +
         " is outside of volume (depth=" + std::to_string(depth) + ")");
   int offset = width * height * layer;
-  manualWindowHandling(layer_data, width * height, win_min, win_max, intercept);
   for (int i = 0; i < width * height; i++) {
     data[i + offset] = layer_data[i];
   }
 }
 
-void VolumicData::manualWindowHandling(uint16_t *layer_data, int size, double win_min, double win_max, double intercept) {
-
-	double win_range = win_max - win_min;
+double VolumicData::manualWindowHandling(double value, double win_min, double win_max, double intercept) {
 	double offset = pow(2, 15) - intercept;
+	double win_range = win_max - win_min;
+  double v = value - offset;
+  double res;
 
-	for(int i = 0; i < size; ++i) {
-		double v = layer_data[i] - offset;
-    double c;
-  
-    if(v < win_min)
-      c = 0;
-    else if(v > win_max)
-      c = 1;
-    else
-      c = (v - win_min) / win_range;
+  if(v < win_min)
+    res = 0;
+  else if(v > win_max)
+    res = 1;
+  else
+    res = (v - win_min) / win_range;
       
-    layer_data[i] = c;
-	} 
+  return res;
 }
