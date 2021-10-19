@@ -406,10 +406,10 @@ void DicomViewer::updateVolumicData() {
   int buffer_size = image->getWidth() * image->getHeight();
   uint16_t buffer[buffer_size];
   // Getting default window used
-  double window_center = window_center_slider->value();
-  double window_width = window_width_slider->value();
+  //double window_center = window_center_slider->value();
+  //double window_width = window_width_slider->value();
   // Building a VolumicData object with appropriate dimensions
-  std::unique_ptr<VolumicData> new_data(new VolumicData(image->getWidth(), image->getHeight(), max_instance - min_instance + 1));
+  std::unique_ptr<VolumicData> new_data(new VolumicData(image->getWidth(), image->getHeight(), max_instance - min_instance + 1, getWindowMin(), getWindowMax(), getIntercept()));
 
   for (const auto &entry : active_files) {
     DicomImage *dicom = loadDicomImage(entry.second->getDataset());
@@ -425,7 +425,7 @@ void DicomViewer::updateVolumicData() {
       continue;
     }
 
-    new_data->setLayer(buffer, layer - min_instance, getWindowMin(), getWindowMax(), getIntercept());
+    new_data->setLayer(buffer, layer - min_instance);
   }
   new_data->pixel_width = pixel_width;
   new_data->pixel_height = pixel_height;

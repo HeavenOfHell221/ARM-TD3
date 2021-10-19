@@ -53,16 +53,23 @@ void GLWidget::updateDisplayPoints() {
   int idx_end = W * H * D;
   display_points.reserve(idx_end - idx_start);
 
-  double win_min = win_center - (win_width/2);
-  double win_max = win_center + (win_width/2);
+  double cur_win_min = win_center - (win_width/2);
+  double cur_win_max = win_center + (win_width/2);
 
   // Importing points
   for (int idx = idx_start; idx < idx_end; idx++) {
-    double c = volumic_data->manualWindowHandling(volumic_data->data[idx], win_min, win_max, -1024);
+    double raw_color = volumic_data->data[idx];
+    double c = volumic_data->manualWindowHandling(raw_color); // c entre [0;1]
 
-    if (c > 0 || !hide_empty_points) {
+    int segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max); // segment {0,1}
+  
+    if (segment == 1 && (c > 0 || !hide_empty_points)) {
       DrawablePoint p;
-      p.c = c;
+    
+      p.color.setX(c);
+      p.color.setY(c);
+      p.color.setZ(c);
+      
       p.pos = QVector3D((col - W / 2.) * x_factor, (row - H / 2.) * y_factor,
                         (depth - D / 2.) * z_factor);
       display_points.push_back(p);
@@ -126,7 +133,7 @@ void GLWidget::paintGL() {
 
   glBegin(GL_POINTS);
   for (const DrawablePoint &p : display_points) {
-    glColor4f(p.c, p.c, p.c, alpha);
+    glColor4f(p.color.x(), p.color.y(), p.color.z(), alpha);
     glVertex3d(p.pos.x(), p.pos.y(), p.pos.z());
   }
   glEnd();
@@ -169,8 +176,12 @@ double GLWidget::modifiedDelta(double delta) {
 
 void GLWidget::setWinCenter(double new_value) {
   win_center = new_value;
+  updateDisplayPoints();
+  update();
 }
 
 void GLWidget::setWinWidth(double new_value) {
   win_width = new_value;
+  updateDisplayPoints();
+  update();
 }

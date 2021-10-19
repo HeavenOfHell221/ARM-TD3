@@ -23,18 +23,21 @@ public:
   double pixel_height;
   double slice_spacing;
 
-  // TODO: add pixel_width, pixel_height and pixel_depth
+  double win_min;
+  double win_max;
+  double intercept;
 
   // The data provided
   VolumicData();
-  VolumicData(int width, int height, int depth);
+  VolumicData(int width, int height, int depth, double win_min, double win_max, double intercept);
   VolumicData(const VolumicData &other);
   ~VolumicData();
 
   unsigned char getValue(int col, int row, int layer);
 
-  void setLayer(uint16_t *layer_data, int layer, double win_min, double win_max, double intercept);
-  double manualWindowHandling(double value, double win_min, double win_max, double intercept);
+  void setLayer(uint16_t *layer_data, int layer);
+  double manualWindowHandling(double value);
+  int threshold(double value, double min, double max);
 
 };
 

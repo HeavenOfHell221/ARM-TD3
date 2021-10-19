@@ -32,7 +32,7 @@ public slots:
 protected:
   struct DrawablePoint {
     QVector3D pos;
-    double c;
+    QVector3D color;
   };
 
   void initializeGL() override;
