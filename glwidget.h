@@ -26,8 +26,13 @@ public:
   void setWinCenter(double new_value);
   void setWinWidth(double new_value);
 
+  void updateDisplayPoints();
+
+  bool contours_mode;
+
 public slots:
   void setAlpha(double new_alpha);
+  void onContoursModeChange(int state);
 
 protected:
   struct DrawablePoint {
@@ -38,7 +43,6 @@ protected:
   void initializeGL() override;
   void paintGL() override;
 
-  void updateDisplayPoints();
 
   void wheelEvent(QWheelEvent *event) override;
 

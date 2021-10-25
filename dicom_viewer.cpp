@@ -29,11 +29,13 @@ DicomViewer::DicomViewer(QWidget *parent)
 
   hide_2d_image = new CheckBox("test", "Hide 2D image");
   hide_3d_image = new CheckBox("test", "Hide 3D image");
-  
+
   highlight_active_layer = new CheckBox("test", "Highlight active layer");
   hide_layers_below = new CheckBox("test", "Hide layers below");
   hide_layers_above = new CheckBox("test", "Hide layers above");
 
+  contours_mode = new CheckBox("test", "Contours Mode");
+  
   layout->addWidget(alpha_slider, 0, 0, 1, 3);
   layout->addWidget(slice_slider, 1, 0, 1, 3);
   layout->addWidget(window_center_slider, 2, 0, 1, 3);
@@ -48,6 +50,9 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(highlight_active_layer, 6, 0, 1, 1);
   layout->addWidget(hide_layers_below, 7, 0, 1, 1);
   layout->addWidget(hide_layers_above, 8, 0, 1, 1);
+
+  layout->addWidget(contours_mode, 9, 0, 1, 1);
+
 
   widget->setLayout(layout);
   // Setting menu
@@ -79,6 +84,9 @@ DicomViewer::DicomViewer(QWidget *parent)
   connect(hide_3d_image, SIGNAL(stateChanged(int)), this,
           SLOT(on3dDisplayStateChange(int)));
 
+  //Contour connection
+  connect(contours_mode, SIGNAL(stateChanged(int)), gl_widget,
+          SLOT(onContoursModeChange(int)));
 
   // Codec registration
   DcmRLEDecoderRegistration::registerCodecs();
@@ -326,6 +334,8 @@ void DicomViewer::on3dDisplayStateChange(int state) {
     gl_widget->setVisible(false);
   else
     gl_widget->setVisible(true);
+
+  updateVolumicData();
 }
 
 DcmDataset *DicomViewer::getDataset() {

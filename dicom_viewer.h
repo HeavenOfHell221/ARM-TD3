@@ -53,6 +53,8 @@ private:
   CheckBox *hide_layers_below;
   CheckBox *hide_layers_above;
 
+  CheckBox *contours_mode;
+
   /// The area in which the image is shown
   ImageLabel *img_label;
 

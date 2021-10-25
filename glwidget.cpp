@@ -14,6 +14,7 @@ GLWidget::GLWidget(QWidget *parent)
   size_policy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
   size_policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
   setSizePolicy(size_policy);
+  contours_mode = false;
 }
 
 GLWidget::~GLWidget() {}
@@ -25,9 +26,19 @@ void GLWidget::setAlpha(double new_alpha) {
   update();
 }
 
+void GLWidget::onContoursModeChange(int state) {
+  if (state >= 1){
+    contours_mode = true;
+  }else{
+    contours_mode = false;
+  }
+  updateDisplayPoints();
+}
+
 void GLWidget::updateVolumicData(std::unique_ptr<VolumicData> new_data) {
   volumic_data = std::move(new_data);
   updateDisplayPoints();
+  update();
 }
 
 void GLWidget::updateDisplayPoints() {
@@ -62,7 +73,68 @@ void GLWidget::updateDisplayPoints() {
     double c = volumic_data->manualWindowHandling(raw_color); // c entre [0;1]
 
     int segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max); // segment {0,1}
-  
+
+    double curr_raw_color;
+    int curr_segment, slice, x, y;
+    int width = volumic_data->width;
+    int height = volumic_data->height;
+
+    if(segment == 1 && contours_mode==true)
+    {
+      bool drawable = false;
+      //6 connectivity
+      // for(slice=-1; slice<=1; slice++){
+      //   for(y=-1; y<=1; y++){
+      //     for(x=-1; x<=1; x++){
+      //       if(((x==-1||x==1) && y==0 && slice==0) ||
+      //             (x==0 && (y==-1||y==1) && slice==0) ||
+      //             (x==0 && y==0 && (slice==-1||slice==1)))
+      //       {  
+      //         curr_raw_color = volumic_data->data[idx + slice*width*height + y*height + x];
+      //         curr_segment = volumic_data->threshold(curr_raw_color, cur_win_min, cur_win_max);
+
+      //         if(curr_segment!=segment)
+      //           drawable = true;
+      //       }
+      //     }
+      //   }
+      // }
+
+      //18 connectivity
+      // for(slice=-1; slice<=1; slice++){
+      //   for(y=-1; y<=1; y++){
+      //     for(x=-1; x<=1; x++){
+      //       if(!(slice!=0 && y!=0 && x!=0))
+      //       {  
+      //         curr_raw_color = volumic_data->data[idx + slice*width*height + y*height + x];
+      //         curr_segment = volumic_data->threshold(curr_raw_color, cur_win_min, cur_win_max);
+
+      //         if(curr_segment!=segment)
+      //           drawable = true;
+      //       }
+      //     }
+      //   }
+      // }
+
+      //26 connectivity
+      for(slice=-1; slice<=1; slice++){
+        for(y=-1; y<=1; y++){
+          for(x=-1; x<=1; x++){
+            curr_raw_color = volumic_data->data[idx + slice*width*height + y*height + x];
+            curr_segment = volumic_data->threshold(curr_raw_color, cur_win_min, cur_win_max);
+
+            if(curr_segment!=segment)
+              drawable = true;
+          }
+        }
+      }
+
+      if(drawable == false){
+        segment = 0;
+      }
+    }
+
+
     if (segment == 1 && (c > 0 || !hide_empty_points)) {
       DrawablePoint p;
     
