@@ -81,11 +81,6 @@ void GLWidget::updateDisplayPoints()
 	// Importing points
 	for (int idx = idx_start; idx < idx_end; idx++)
 	{
-		/*if(idx == W*H) {
-			QVector3D pos = volumic_data->getCoordinate(idx);
-			std::cout << pos.x() << ", " << pos.y() << ", " << pos.z() << std::endl;
-		}*/
-
 		double raw_color = volumic_data->data[idx];
 		double c = volumic_data->manualWindowHandling(raw_color); // c [0;1]
 
@@ -93,9 +88,9 @@ void GLWidget::updateDisplayPoints()
 		{
 			int segment;
 			if (useMultipleSegment)
-				segment = volumic_data->threshold(raw_color);
+				segment = volumic_data->threshold(raw_color); // segment entre 1 et 6 s'il appartient à une catégorie, -1 sinon
 			else
-				segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max);
+				segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max); // 0 si la couleur est dans l'interval, -1 sinon
 
 			if (segment != -1)
 			{
@@ -253,7 +248,7 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 
 	switch (mode)
 	{
-	case 0:
+	case 0: // 6-connectivity
 	{
 		for (int dz = -1; dz <= 1; ++dz)
 			for (int dy = -1; dy <= 1; ++dy)
@@ -277,7 +272,7 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 		break;
 	}
 
-	case 1:
+	case 1: // 18-connectivity
 	{
 		for (int dz = -1; dz <= 1; ++dz)
 			for (int dy = -1; dy <= 1; ++dy)
@@ -300,7 +295,7 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 		break;
 	}
 
-	case 2:
+	case 2: // 26-connectivity
 	{
 		for (int dz = z - 1; dz <= z + 1; ++dz)
 			for (int dy = y - 1; dy <= y + 1; ++dy)
