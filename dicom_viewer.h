@@ -17,6 +17,7 @@
 #include "int_slider.h"
 #include "checkbox.h"
 
+
 class DicomViewer : public QMainWindow {
   Q_OBJECT
 
@@ -121,6 +122,8 @@ private:
 
   /// Update the volumic_data element based on active_files
   void updateVolumicData();
+
+  void loadJSONdata();
 
   /// Retrieve patient name from active file
   /// return 'FAIL' if no active file is found

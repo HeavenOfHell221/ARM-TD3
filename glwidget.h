@@ -54,6 +54,8 @@ protected:
    */
   double modifiedDelta(double delta);
 
+  bool connectivity(int mode, int offset, int curr_segment, double curr_row_color);
+
   QPoint lastPos;
   float alpha;
   /**
@@ -77,6 +79,7 @@ protected:
 
   /// The points to be drawn
   std::vector<DrawablePoint> display_points;
+  
 };
 
 #endif // GLWIDGET_H

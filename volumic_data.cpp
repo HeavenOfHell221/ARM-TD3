@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#define range(value, min, max) value >= min && value < max 
+
 VolumicData::VolumicData()
     : width(-1), height(-1), depth(-1), pixel_width(-1), pixel_height(-1),
       slice_spacing(0) {}
@@ -20,6 +22,10 @@ unsigned char VolumicData::getValue(int col, int row, int layer) {
   return data[col + row * width + layer * width * height];
 }
 
+unsigned char VolumicData::getValue(int col, int row, int layer, int offset) {
+  return data[col + row * width + layer * width * height + offset];
+}
+
 void VolumicData::setLayer(uint16_t *layer_data, int layer) {
   if (layer >= depth)
     throw std::out_of_range(
@@ -33,23 +39,40 @@ void VolumicData::setLayer(uint16_t *layer_data, int layer) {
 }
 
 double VolumicData::manualWindowHandling(double value) {
-	//double offset = pow(2, 15) - intercept;
-  double v = value;
+  if(value < win_min)  return 0;
+  if(value > win_max)  return 1;
 
-  if(v < win_min) 
-    return 0;
-  if(v > win_max) 
-    return 1;
-
-  return (v - win_min) / (win_max - win_min);
+  return (value - win_min) / (win_max - win_min);
 }
 
 int VolumicData::threshold(double value, double min, double max) {
-  //double offset = pow(2, 15) - intercept;
-  double v = value;
-
-  if(v >= min && v <= max)
-    return 1;
-  
+  if(value > max || value < min)
+    return -1;
   return 0;
+}
+
+int VolumicData::threshold(double value) {
+  if(range(value, 200, 1024))         return 1; // Bone
+  else if(range(value, 100, 200))     return 2; // Structures faiblement calcifiées
+  else if(range(value, 37, 45))       return 3; // Matière grise
+  else if(range(value, 20, 30))       return 4; // Matière blanche
+  else if(range(value, -5, 15))       return 5; // Eau et liquides cérébro
+  else if(range(value, -1024, -10))   return 6; // Graisses, poumons, air
+
+  return -1;
+}
+
+QVector3D VolumicData::getColorSegment(int segment, double c) {
+  switch (segment)
+  {
+    case 0: return QVector3D(c, c, c);
+    case 1: return QVector3D(1, 1, 1);        // blanc
+    case 2: return QVector3D(0.5, 0.5, 0.5);  // gris
+    case 3: return QVector3D(0, 1, 0);        // vert
+    case 4: return QVector3D(1, 0.7, 0);        // jaune
+    case 5: return QVector3D(0.2, 0.2, 1);    // bleu
+    case 6: return QVector3D(1, 0, 0);        // rouge
+
+    default: return QVector3D(0, 0, 0);
+  }
 }

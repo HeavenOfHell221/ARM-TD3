@@ -509,6 +509,13 @@ void DicomViewer::getWindow(double *min_value, double *max_value) {
   *max_value = center + width / 2;
 }
 
+void DicomViewer::loadJSONdata() {
+  QString file = QFileDialog::getOpenFileName( this, "Select files to open", "JSON (*.json)");
+  // If no file has been selected, don't change anything
+  if (file.isEmpty())
+    return;
+}
+
 double DicomViewer::getSlope() {
   return getField<double>(getDataset(), DcmTagKey(0x28, 0x1053));
 }

@@ -7,6 +7,8 @@
 #include <iostream>
 #include <cmath>
 
+#include <QVector3D>
+
 class VolumicData {
 public:
   // The data from the volume stored:
@@ -34,10 +36,13 @@ public:
   ~VolumicData();
 
   unsigned char getValue(int col, int row, int layer);
+  unsigned char getValue(int col, int row, int layer, int offset);
 
   void setLayer(uint16_t *layer_data, int layer);
   double manualWindowHandling(double value);
+  int threshold(double value);
   int threshold(double value, double min, double max);
+  QVector3D getColorSegment(int segment, double c);
 
 };
 
