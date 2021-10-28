@@ -22,8 +22,11 @@ unsigned char VolumicData::getValue(int col, int row, int layer) {
   return data[col + row * width + layer * width * height];
 }
 
-unsigned char VolumicData::getValue(int col, int row, int layer, int offset) {
-  return data[col + row * width + layer * width * height + offset];
+QVector3D VolumicData::getCoordinate(int idx) {
+  int x = idx % width;
+  int y = (idx/width) % height;
+  int z = idx / (width*height);
+  return QVector3D(x, y, z); 
 }
 
 void VolumicData::setLayer(uint16_t *layer_data, int layer) {

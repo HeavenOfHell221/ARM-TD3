@@ -81,6 +81,11 @@ void GLWidget::updateDisplayPoints()
 	// Importing points
 	for (int idx = idx_start; idx < idx_end; idx++)
 	{
+		/*if(idx == W*H) {
+			QVector3D pos = volumic_data->getCoordinate(idx);
+			std::cout << pos.x() << ", " << pos.y() << ", " << pos.z() << std::endl;
+		}*/
+
 		double raw_color = volumic_data->data[idx];
 		double c = volumic_data->manualWindowHandling(raw_color); // c [0;1]
 
@@ -94,14 +99,13 @@ void GLWidget::updateDisplayPoints()
 
 			if (segment != -1)
 			{
-				if (!contours_mode || contours_mode && connectivity(2, idx, segment, raw_color))
+				if (!contours_mode || (contours_mode && connectivity(0, idx, segment)))
 				{
 					DrawablePoint p;
 
 					p.color = volumic_data->getColorSegment(segment, c);
 
-					p.pos = QVector3D((col - W / 2.) * x_factor, (row - H / 2.) * y_factor,
-									  (depth - D / 2.) * z_factor);
+					p.pos = QVector3D((col - W / 2.) * x_factor, (row - H / 2.) * y_factor, (depth - D / 2.) * z_factor);
 					display_points.push_back(p);
 				}
 			}
@@ -235,79 +239,80 @@ void GLWidget::setWinWidth(double new_value)
 	update();
 }
 
-bool GLWidget::connectivity(int mode, int offset, int curr_segment, double curr_row_color)
+bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment)
 {
-	bool drawable = false;
+	int W = volumic_data->width;
+	int H = volumic_data->height;
+	int D = volumic_data->depth;
+
+	QVector3D pos = volumic_data->getCoordinate(idx);
+	
+	int x = pos.x();
+	int y = pos.y();
+	int z = pos.z();
 
 	switch (mode)
 	{
 	case 0:
 	{
+		for (int dz = -1; dz <= 1; ++dz)
+			for (int dy = -1; dy <= 1; ++dy)
+				for (int dx = -1; dx <= 1; ++dx)
+				{
+					if(abs(dx+dy+dz) == 1 && (dx == 0 || dy == 0 || dz == 0))
+					{
+						x += dx;
+						y += dy;
+						z += dz;
 
-		//6 connectivity
-		// for(slice=-1; slice<=1; slice++){
-		//   for(y=-1; y<=1; y++){
-		//     for(x=-1; x<=1; x++){
-		//       if(((x==-1||x==1) && y==0 && slice==0) ||
-		//             (x==0 && (y==-1||y==1) && slice==0) ||
-		//             (x==0 && y==0 && (slice==-1||slice==1)))
-		//       {
-		//         curr_raw_color = volumic_data->data[idx + slice*width*height + y*height + x];
-		//         curr_segment = volumic_data->threshold(curr_raw_color);
-
-		//         if(curr_segment!=segment)
-		//           drawable = true;
-		//       }
-		//     }
-		//   }
-		// }
-
+						if(x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D)
+							continue;
+			
+						double raw_color = volumic_data->getValue(x, y, z);
+						if (curr_segment != volumic_data->threshold(raw_color))
+							return true;
+					}
+					
+				}
 		break;
 	}
 
 	case 1:
 	{
-		//18 connectivity
-		// for(slice=-1; slice<=1; slice++){
-		//   for(y=-1; y<=1; y++){
-		//     for(x=-1; x<=1; x++){
-		//       if(!(slice!=0 && y!=0 && x!=0))
-		//       {
-		//         curr_raw_color = volumic_data->data[idx + slice*width*height + y*height + x];
-		//         curr_segment = volumic_data->threshold(curr_raw_color);
+		for (int dz = -1; dz <= 1; ++dz)
+			for (int dy = -1; dy <= 1; ++dy)
+				for (int dx = -1; dx <= 1; ++dx)
+				{
+					if(dx != 0 && dy != 0 && dz != 0)
+						continue;
+					
+					x += dx;
+					y += dy;
+					z += dz;
 
-		//         if(curr_segment!=segment)
-		//           drawable = true;
-		//       }
-		//     }
-		//   }
-		// }
+					if(x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D)
+						continue;
+		
+					double raw_color = volumic_data->getValue(x, y, z);
+					if (curr_segment != volumic_data->threshold(raw_color))
+						return true;
+				}
 		break;
 	}
 
 	case 2:
 	{
-		int width = volumic_data->width;
-    	int height = volumic_data->height;
-		//26 connectivity
-		for (int layer = -1; layer <= 1; layer++)
-		{
-			for (int y = -1; y <= 1; y++)
-			{
-				for (int x = -1; x <= 1; x++)
+		for (int dz = z - 1; dz <= z + 1; ++dz)
+			for (int dy = y - 1; dy <= y + 1; ++dy)
+				for (int dx = x - 1; dx <= x + 1; ++dx)
 				{
-					int idx = offset + layer*width*height + y*height + x;
-					double raw_color = volumic_data->data[idx];
-					//double raw_color = volumic_data->getValue(x, y, layer, offset);
-					int segment = volumic_data->threshold(raw_color);
-
-					if (curr_segment != segment)
-					{
-						drawable = true;
-					}
+					if(dx < 0 || dy < 0 || dz < 0 || dx >= W || dy >= H || dz >= D)
+						continue;
+		
+					double raw_color = volumic_data->getValue(dx, dy, dz);
+					if (curr_segment != volumic_data->threshold(raw_color))
+						return true;
 				}
-			}
-		}
 		break;
 	}
 
@@ -317,5 +322,5 @@ bool GLWidget::connectivity(int mode, int offset, int curr_segment, double curr_
 	}
 	}
 
-	return drawable;
+	return false;
 }

@@ -54,7 +54,7 @@ protected:
    */
   double modifiedDelta(double delta);
 
-  bool connectivity(int mode, int offset, int curr_segment, double curr_row_color);
+  bool connectivity(const int mode, const int offset, const int curr_segment);
 
   QPoint lastPos;
   float alpha;
