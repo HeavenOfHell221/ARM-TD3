@@ -35,6 +35,7 @@ DicomViewer::DicomViewer(QWidget *parent)
   hide_layers_above = new CheckBox("test", "Hide layers above");
 
   contours_mode = new CheckBox("test", "Contours Mode");
+  color_mode = new CheckBox("test", "Color Mode");
   
   layout->addWidget(alpha_slider, 0, 0, 1, 3);
   layout->addWidget(slice_slider, 1, 0, 1, 3);
@@ -52,6 +53,7 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(hide_layers_above, 8, 0, 1, 1);
 
   layout->addWidget(contours_mode, 9, 0, 1, 1);
+  layout->addWidget(color_mode, 10, 0, 1, 1);
 
 
   widget->setLayout(layout);
@@ -87,6 +89,10 @@ DicomViewer::DicomViewer(QWidget *parent)
   //Contour connection
   connect(contours_mode, SIGNAL(stateChanged(int)), gl_widget,
           SLOT(onContoursModeChange(int)));
+
+  //Color connection
+  connect(color_mode, SIGNAL(stateChanged(int)), gl_widget,
+          SLOT(onColorModeChange(int)));
 
   // Codec registration
   DcmRLEDecoderRegistration::registerCodecs();

@@ -16,6 +16,7 @@ GLWidget::GLWidget(QWidget *parent)
 	size_policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 	setSizePolicy(size_policy);
 	contours_mode = false;
+  color_mode = false;
 }
 
 GLWidget::~GLWidget() {}
@@ -31,13 +32,19 @@ void GLWidget::setAlpha(double new_alpha)
 void GLWidget::onContoursModeChange(int state)
 {
 	if (state >= 1)
-	{
 		contours_mode = true;
-	}
 	else
-	{
 		contours_mode = false;
-	}
+	updateDisplayPoints();
+	update();
+}
+
+void GLWidget::onColorModeChange(int state)
+{
+	if (state >= 1)
+		color_mode = true;
+	else
+		color_mode = false;
 	updateDisplayPoints();
 	update();
 }
@@ -73,8 +80,6 @@ void GLWidget::updateDisplayPoints()
 	int idx_end = W * H * D;
 	display_points.reserve(idx_end - idx_start);
 
-	bool useMultipleSegment = true;
-
 	double cur_win_min = win_center - (win_width / 2);
 	double cur_win_max = win_center + (win_width / 2);
 
@@ -86,16 +91,15 @@ void GLWidget::updateDisplayPoints()
 
 		if (c > 0 || !hide_empty_points)
 		{
-			int segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max, useMultipleSegment);
+			int segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max, color_mode);
 
 			if (segment != 0)
 			{
-				if (!contours_mode || (contours_mode && connectivity(0, idx, segment, cur_win_min, cur_win_max, useMultipleSegment)))
+				if (!contours_mode || (contours_mode && connectivity(0, idx, segment, cur_win_min, cur_win_max, color_mode)))
 				{
 					DrawablePoint p;
 
-					p.color = volumic_data->getColorSegment(segment, c);
-
+          p.color = volumic_data->getColorSegment(segment, c);
 					p.pos = QVector3D((col - W / 2.) * x_factor, (row - H / 2.) * y_factor, (depth - D / 2.) * z_factor);
 					display_points.push_back(p);
 				}
