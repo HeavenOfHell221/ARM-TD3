@@ -297,7 +297,7 @@ void GLWidget::setWinWidth(double new_value)
 	update();
 }
 
-bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max)
+bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment, const double min, const double max)
 {
 	const int W = volumic_data->width;
 	const int H = volumic_data->height;
@@ -309,86 +309,41 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 	const int y = pos.y();
 	const int z = pos.z();
 
-	switch (mode)
-	{
-	case 0: // 6-connectivity
-	{
-		for (int dz = -1; dz <= 1; ++dz)
-			for (int dy = -1; dy <= 1; ++dy)
-				for (int dx = -1; dx <= 1; ++dx)
+	for (int dz = -1; dz <= 1; ++dz)
+		for (int dy = -1; dy <= 1; ++dy)
+			for (int dx = -1; dx <= 1; ++dx)
+			{
+				int new_x = x + dx;
+				int new_y = y + dy;
+				int new_z = z + dz;
+
+				if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
+					continue;
+
+				switch(mode)
 				{
-					if(abs(dx+dy+dz) == 1 && (dx == 0 || dy == 0 || dz == 0))
+					case 0:
 					{
-						int new_x = x + dx;
-						int new_y = y + dy;
-						int new_z = z + dz;
-
-						if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
+						if(!(abs(dx+dy+dz) == 1 && (dx == 0 || dy == 0 || dz == 0)))
 							continue;
-			
-						double raw_color = volumic_data->getValue(new_x, new_y, new_z);
-						int neighbor_segment = volumic_data->threshold(raw_color, min, max, color_mode);
-						if (curr_segment != neighbor_segment) {
-							return true;
-						}
+						break;
 					}
-					
-				}
-		break;
-	}
-
-	case 1: // 18-connectivity
-	{
-		for (int dz = -1; dz <= 1; ++dz)
-			for (int dy = -1; dy <= 1; ++dy)
-				for (int dx = -1; dx <= 1; ++dx)
-				{
-					if(dx != 0 && dy != 0 && dz != 0)
-						continue;
-							
-					int new_x = x + dx;
-					int new_y = y + dy;
-					int new_z = z + dz;
-
-					if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
-						continue;
-		
-					double raw_color = volumic_data->getValue(new_x, new_y, new_z);
-					int neighbor_segment = volumic_data->threshold(raw_color, min, max, color_mode);
-					if (curr_segment != neighbor_segment) {
-						return true;
+					case 1:
+					{
+						if(dx != 0 && dy != 0 && dz != 0)
+							continue;
+						break;
 					}
+					case 2: break;
+					default: break;
+				}	
+
+				double raw_color = volumic_data->getValue(new_x, new_y, new_z);
+				int neighbor_segment = volumic_data->threshold(raw_color, min, max, color_mode);
+				if (curr_segment != neighbor_segment) {
+					return true;
 				}
-		break;
-	}
-
-	case 2: // 26-connectivity
-	{
-		for (int dz = -1; dz <= 1; ++dz)
-			for (int dy = -1; dy <= 1; ++dy)
-				for (int dx = -1; dx <= 1; ++dx)
-				{	
-					int new_x = x + dx;
-					int new_y = y + dy;
-					int new_z = z + dz;
-
-					if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
-						continue;
-		
-					double raw_color = volumic_data->getValue(new_x, new_y, new_z);
-					int neighbor_segment = volumic_data->threshold(raw_color, min, max, color_mode);
-					if (curr_segment != neighbor_segment) {
-						return true;
-					}
-				}
-		break;
-	}
-
-	default:
-	{
-		break;
-	}
-	}
+			}
 
 	return false;
 }
