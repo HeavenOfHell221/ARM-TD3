@@ -319,6 +319,8 @@ void DicomViewer::showStats() {
 void DicomViewer::onSliceChange(int new_slice) {
   (void)new_slice;
   gl_widget->curr_slice = new_slice;
+  gl_widget->updateDisplayPoints();
+  gl_widget->update();
   loadDicomImage();
   updateImage();
 }
