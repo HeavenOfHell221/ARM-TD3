@@ -59,7 +59,7 @@ int VolumicData::threshold(double value) {
   else if(range(value, 100, 200))     return 2; // Structures faiblement calcifiées
   else if(range(value, 37, 45))       return 3; // Matière grise
   else if(range(value, 20, 30))       return 4; // Matière blanche
-  else if(range(value, -5, 15))       return 5; // Eau et liquides cérébro
+  else if(range(value, -5, 15))       return 5; // Eau et liquides cérébraux
   else if(range(value, -1024, -10))   return 6; // Graisses, poumons, air
 
   return -1;

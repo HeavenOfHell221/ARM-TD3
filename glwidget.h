@@ -29,10 +29,12 @@ public:
   void updateDisplayPoints();
 
   bool contours_mode;
+  bool color_mode;
 
 public slots:
   void setAlpha(double new_alpha);
   void onContoursModeChange(int state);
+  void onColorModeChange(int state);
 
 protected:
   struct DrawablePoint {
