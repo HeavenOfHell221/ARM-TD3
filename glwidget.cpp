@@ -244,7 +244,7 @@ void GLWidget::paintGL()
 	glBegin(GL_POINTS);
 	for (const DrawablePoint &p : display_points)
 	{
-		if(highlight)
+		if(highlight && p.a == 1.0)
       		glColor4f(p.color.x(), p.color.y(), p.color.z(), p.a);
     	else 
       		glColor4f(p.color.x(), p.color.y(), p.color.z(), alpha);
