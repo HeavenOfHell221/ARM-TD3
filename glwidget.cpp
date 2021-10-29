@@ -86,15 +86,11 @@ void GLWidget::updateDisplayPoints()
 
 		if (c > 0 || !hide_empty_points)
 		{
-			int segment;
-			if (useMultipleSegment)
-				segment = volumic_data->threshold(raw_color); // segment entre 1 et 6 s'il appartient à une catégorie, -1 sinon
-			else
-				segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max); // 0 si la couleur est dans l'interval, -1 sinon
+			int segment = volumic_data->threshold(raw_color, cur_win_min, cur_win_max, useMultipleSegment);
 
-			if (segment != -1)
+			if (segment != 0)
 			{
-				if (!contours_mode || (contours_mode && connectivity(0, idx, segment)))
+				if (!contours_mode || (contours_mode && connectivity(0, idx, segment, cur_win_min, cur_win_max, useMultipleSegment)))
 				{
 					DrawablePoint p;
 
@@ -234,7 +230,7 @@ void GLWidget::setWinWidth(double new_value)
 	update();
 }
 
-bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment)
+bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max, const bool colorMode)
 {
 	int W = volumic_data->width;
 	int H = volumic_data->height;
@@ -256,16 +252,18 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 				{
 					if(abs(dx+dy+dz) == 1 && (dx == 0 || dy == 0 || dz == 0))
 					{
-						x += dx;
-						y += dy;
-						z += dz;
+						int new_x = x + dx;
+						int new_y = y + dy;
+						int new_z = z + dz;
 
-						if(x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D)
+						if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
 							continue;
 			
-						double raw_color = volumic_data->getValue(x, y, z);
-						if (curr_segment != volumic_data->threshold(raw_color))
+						double raw_color = volumic_data->getValue(new_x, new_y, new_z);
+						int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+						if (curr_segment != neighbors_segment) {
 							return true;
+						}
 					}
 					
 				}
@@ -280,17 +278,19 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 				{
 					if(dx != 0 && dy != 0 && dz != 0)
 						continue;
-					
-					x += dx;
-					y += dy;
-					z += dz;
+							
+					int new_x = x + dx;
+					int new_y = y + dy;
+					int new_z = z + dz;
 
-					if(x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D)
+					if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
 						continue;
 		
-					double raw_color = volumic_data->getValue(x, y, z);
-					if (curr_segment != volumic_data->threshold(raw_color))
+					double raw_color = volumic_data->getValue(new_x, new_y, new_z);
+					int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+					if (curr_segment != neighbors_segment) {
 						return true;
+					}
 				}
 		break;
 	}
@@ -305,8 +305,10 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 						continue;
 		
 					double raw_color = volumic_data->getValue(dx, dy, dz);
-					if (curr_segment != volumic_data->threshold(raw_color))
+					int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+					if (curr_segment != neighbors_segment) {
 						return true;
+					}
 				}
 		break;
 	}

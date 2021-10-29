@@ -48,34 +48,36 @@ double VolumicData::manualWindowHandling(double value) {
   return (value - win_min) / (win_max - win_min);
 }
 
-int VolumicData::threshold(double value, double min, double max) {
-  if(value > max || value < min)
-    return -1;
+int VolumicData::threshold(double value, double min, double max, bool colorMode) {
+  
+  if (!colorMode) 
+  {
+    if(value <= max && value >= min)
+      return 1;
+  }
+  else 
+  {
+    if(range(value, 200, 1024))         return 2; // Bone
+    else if(range(value, 100, 200))     return 3; // Structures faiblement calcifiées
+    else if(range(value, 37, 45))       return 4; // Matière grise
+    else if(range(value, 20, 30))       return 5; // Matière blanche
+    else if(range(value, -5, 15))       return 6; // Eau et liquides cérébro
+    else if(range(value, -1024, -10))   return 7; // Graisses, poumons, air
+  }
   return 0;
 }
 
-int VolumicData::threshold(double value) {
-  if(range(value, 200, 1024))         return 1; // Bone
-  else if(range(value, 100, 200))     return 2; // Structures faiblement calcifiées
-  else if(range(value, 37, 45))       return 3; // Matière grise
-  else if(range(value, 20, 30))       return 4; // Matière blanche
-  else if(range(value, -5, 15))       return 5; // Eau et liquides cérébro
-  else if(range(value, -1024, -10))   return 6; // Graisses, poumons, air
-
-  return -1;
-}
-
 QVector3D VolumicData::getColorSegment(int segment, double c) {
+  QVector3D color;
   switch (segment)
   {
-    case 0: return QVector3D(c, c, c);
-    case 1: return QVector3D(1, 1, 1);        // blanc
-    case 2: return QVector3D(0.5, 0.5, 0.5);  // gris
-    case 3: return QVector3D(0, 1, 0);        // vert
-    case 4: return QVector3D(1, 0.7, 0);        // jaune
-    case 5: return QVector3D(0.2, 0.2, 1);    // bleu
-    case 6: return QVector3D(1, 0, 0);        // rouge
-
-    default: return QVector3D(0, 0, 0);
+    case 1: color = QVector3D(c, c, c); break;        // blanc
+    case 2: color = QVector3D(1, 1, 1); break;       // blanc
+    case 3: color = QVector3D(0.5, 0.5, 0.5); break;  // gris
+    case 4: color = QVector3D(0, 1, 0); break;       // vert
+    case 5: color = QVector3D(1, 0.7, 0); break;       // jaune
+    case 6: color = QVector3D(0.2, 0.2, 1); break;   // bleu
+    case 7: color = QVector3D(1, 0, 0); break;       // rouge
   }
+  return color;
 }
