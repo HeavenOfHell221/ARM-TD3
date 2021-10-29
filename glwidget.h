@@ -33,6 +33,7 @@ public:
   bool hide_below;
   bool hide_above;
   int curr_slice;
+  bool color_mode;
 
 public slots:
   void setAlpha(double new_alpha);
@@ -40,6 +41,7 @@ public slots:
   void highlightActiveLayer(int state);
   void hideLayersAbove(int state);
   void hideLayersBelow(int state);
+  void onColorModeChange(int state);
 
 protected:
   struct DrawablePoint {
@@ -62,7 +64,8 @@ protected:
    */
   double modifiedDelta(double delta);
 
-  bool connectivity(const int mode, const int offset, const int curr_segment);
+  bool connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max, const bool colorMode);
+
 
   QPoint lastPos;
   float alpha;

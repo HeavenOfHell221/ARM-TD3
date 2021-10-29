@@ -39,8 +39,7 @@ public:
 
   void setLayer(uint16_t *layer_data, int layer);
   double manualWindowHandling(double value);
-  int threshold(double value);
-  int threshold(double value, double min, double max);
+  int threshold(double value, double min, double max, bool colorMode);
   QVector3D getColorSegment(int segment, double c);
   QVector3D getCoordinate(int idx);
 

@@ -35,6 +35,7 @@ DicomViewer::DicomViewer(QWidget *parent)
   hide_layers_above = new CheckBox("test", "Hide layers above");
 
   contours_mode = new CheckBox("test", "Contours Mode");
+  color_mode = new CheckBox("test", "Color Mode");
   
   layout->addWidget(alpha_slider, 0, 0, 1, 3);
   layout->addWidget(slice_slider, 1, 0, 1, 3);
@@ -52,6 +53,7 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(hide_layers_above, 8, 0, 1, 1);
 
   layout->addWidget(contours_mode, 9, 0, 1, 1);
+  layout->addWidget(color_mode, 10, 0, 1, 1);
 
 
   widget->setLayout(layout);
@@ -93,6 +95,10 @@ DicomViewer::DicomViewer(QWidget *parent)
   //Contour connection
   connect(contours_mode, SIGNAL(stateChanged(int)), gl_widget,
           SLOT(onContoursModeChange(int)));
+
+  //Color connection
+  connect(color_mode, SIGNAL(stateChanged(int)), gl_widget,
+          SLOT(onColorModeChange(int)));
 
   // Codec registration
   DcmRLEDecoderRegistration::registerCodecs();
@@ -434,57 +440,6 @@ void DicomViewer::updateVolumicData() {
     dicom->setNoVoiTransformation();
     int bits_per_pixel = 16;
     int layer = entry.first;
-    // if(!hide_below && !hide_above){
-    //   std::cout << "!below et !above" << std::endl;
-    //   int status =
-    //   dicom->getOutputData((void *)buffer, buffer_size*2, bits_per_pixel);
-    //   delete (dicom);
-    //   if (!status) {
-    //     QMessageBox::critical(this, "Failed update volumic data",
-    //                           "getOutputData failed");
-    //     continue;
-    //   }
-    //   new_data->setLayer(buffer, layer - min_instance);
-    // }else if(hide_below && !hide_above){
-    //   std::cout << "below et !above" << std::endl;
-    //   if(layer > slice_slider->value()){
-    //     int status =
-    //     dicom->getOutputData((void *)buffer, buffer_size*2, bits_per_pixel);
-    //     delete (dicom);
-    //     if (!status) {
-    //       QMessageBox::critical(this, "Failed update volumic data",
-    //                             "getOutputData failed");
-    //       continue;
-    //     }
-    //     new_data->setLayer(buffer, layer - min_instance);
-    //   }
-    // }else if(!hide_below && hide_above){
-    //   std::cout << "!below et above" << std::endl;
-    //   if(layer <= slice_slider->value()+1){
-    //     int status =
-    //     dicom->getOutputData((void *)buffer, buffer_size*2, bits_per_pixel);
-    //     delete (dicom);
-    //     if (!status) {
-    //       QMessageBox::critical(this, "Failed update volumic data",
-    //                             "getOutputData failed");
-    //       continue;
-    //     }
-    //     new_data->setLayer(buffer, layer - min_instance);      }
-    // }
-    // else if(hide_above && hide_below){
-    //   std::cout << "below et above" << std::endl;
-    //   if(layer == slice_slider->value()){
-    //     int status =
-    //     dicom->getOutputData((void *)buffer, buffer_size*2, bits_per_pixel);
-    //     delete (dicom);
-    //     if (!status) {
-    //       QMessageBox::critical(this, "Failed update volumic data",
-    //                             "getOutputData failed");
-    //       continue;
-    //     }
-    //     new_data->setLayer(buffer, layer - min_instance);
-    //   }
-    // }
     int status = dicom->getOutputData((void *)buffer, 2*buffer_size, bits_per_pixel);
     delete (dicom);
     if (!status) {
