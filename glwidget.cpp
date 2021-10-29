@@ -95,7 +95,7 @@ void GLWidget::updateDisplayPoints()
 
 			if (segment != 0)
 			{
-				if (!contours_mode || (contours_mode && connectivity(0, idx, segment, cur_win_min, cur_win_max, color_mode)))
+				if (!contours_mode || (contours_mode && connectivity(color_mode ? 0 : 2, idx, segment, cur_win_min, cur_win_max, color_mode)))
 				{
 					DrawablePoint p;
 
@@ -236,15 +236,15 @@ void GLWidget::setWinWidth(double new_value)
 
 bool GLWidget::connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max, const bool colorMode)
 {
-	int W = volumic_data->width;
-	int H = volumic_data->height;
-	int D = volumic_data->depth;
+	const int W = volumic_data->width;
+	const int H = volumic_data->height;
+	const int D = volumic_data->depth;
 
-	QVector3D pos = volumic_data->getCoordinate(idx);
+	const QVector3D pos = volumic_data->getCoordinate(idx);
 	
-	int x = pos.x();
-	int y = pos.y();
-	int z = pos.z();
+	const int x = pos.x();
+	const int y = pos.y();
+	const int z = pos.z();
 
 	switch (mode)
 	{
@@ -264,8 +264,8 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 							continue;
 			
 						double raw_color = volumic_data->getValue(new_x, new_y, new_z);
-						int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
-						if (curr_segment != neighbors_segment) {
+						int neighbor_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+						if (curr_segment != neighbor_segment) {
 							return true;
 						}
 					}
@@ -291,8 +291,8 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 						continue;
 		
 					double raw_color = volumic_data->getValue(new_x, new_y, new_z);
-					int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
-					if (curr_segment != neighbors_segment) {
+					int neighbor_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+					if (curr_segment != neighbor_segment) {
 						return true;
 					}
 				}
@@ -301,16 +301,20 @@ bool GLWidget::connectivity(const int mode, const int idx, const int curr_segmen
 
 	case 2: // 26-connectivity
 	{
-		for (int dz = z - 1; dz <= z + 1; ++dz)
-			for (int dy = y - 1; dy <= y + 1; ++dy)
-				for (int dx = x - 1; dx <= x + 1; ++dx)
-				{
-					if(dx < 0 || dy < 0 || dz < 0 || dx >= W || dy >= H || dz >= D)
+		for (int dz = -1; dz <= 1; ++dz)
+			for (int dy = -1; dy <= 1; ++dy)
+				for (int dx = -1; dx <= 1; ++dx)
+				{	
+					int new_x = x + dx;
+					int new_y = y + dy;
+					int new_z = z + dz;
+
+					if(new_x < 0 || new_y < 0 || new_z < 0 || new_x >= W || new_y >= H || new_z >= D)
 						continue;
 		
-					double raw_color = volumic_data->getValue(dx, dy, dz);
-					int neighbors_segment = volumic_data->threshold(raw_color, min, max, colorMode);
-					if (curr_segment != neighbors_segment) {
+					double raw_color = volumic_data->getValue(new_x, new_y, new_z);
+					int neighbor_segment = volumic_data->threshold(raw_color, min, max, colorMode);
+					if (curr_segment != neighbor_segment) {
 						return true;
 					}
 				}
