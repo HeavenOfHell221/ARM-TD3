@@ -16,7 +16,10 @@ GLWidget::GLWidget(QWidget *parent)
 	size_policy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 	setSizePolicy(size_policy);
 	contours_mode = false;
-  color_mode = false;
+	hide_above = false;
+	hide_below = false;
+	highlight = false;
+  	color_mode = false;
 }
 
 GLWidget::~GLWidget() {}
@@ -45,6 +48,37 @@ void GLWidget::onColorModeChange(int state)
 		color_mode = true;
 	else
 		color_mode = false;
+	updateDisplayPoints();
+	update();
+}
+
+void GLWidget::highlightActiveLayer(int state){
+  	if(state == 0)
+  	{
+		highlight = false;
+  	}
+	else
+	{
+		highlight = true;
+	}
+ 	updateDisplayPoints();
+  	update();
+}
+
+void GLWidget::hideLayersBelow(int state){
+	if(state == 0)
+		hide_below = false;
+	else
+		hide_below = true;
+	updateDisplayPoints();
+	update();
+}
+
+void GLWidget::hideLayersAbove(int state){
+	if(state == 0)
+		hide_above = false;
+	else
+		hide_above = true;
 	updateDisplayPoints();
 	update();
 }
@@ -78,6 +112,26 @@ void GLWidget::updateDisplayPoints()
 	z_factor *= global_factor;
 	int idx_start = 0;
 	int idx_end = W * H * D;
+	if(!hide_below && !hide_above)
+	{
+		idx_start = 0;
+		idx_end = W * H * D;
+	}
+	else if(hide_below && !hide_above)
+	{
+		idx_start = W * H * curr_slice;
+		idx_end = W * H * D;
+	}
+	else if(!hide_below && hide_above)
+	{
+		idx_start = 0;
+		idx_end = W * H * (curr_slice+1);
+	}
+	else if(hide_above && hide_below)
+	{
+		idx_start = W * H * curr_slice;
+		idx_end = W * H * (curr_slice+1);
+	}
 	display_points.reserve(idx_end - idx_start);
 
 	double cur_win_min;
@@ -99,8 +153,13 @@ void GLWidget::updateDisplayPoints()
 				if (!contours_mode || (contours_mode && connectivity(color_mode ? 0 : 2, idx, segment, cur_win_min, cur_win_max)))
 				{
 					DrawablePoint p;
+					p.a = alpha;
+					if(highlight){
+      					if(idx>=curr_slice*W*H && idx<(curr_slice+1)*W*H)
+            				p.a = 1.0;   
+    				}
+					p.color = volumic_data->getColorSegment(segment, c);
 
-          			p.color = volumic_data->getColorSegment(segment, c);
 					p.pos = QVector3D((col - W / 2.) * x_factor, (row - H / 2.) * y_factor, (depth - D / 2.) * z_factor);
 					display_points.push_back(p);
 				}
@@ -173,8 +232,11 @@ void GLWidget::paintGL()
 	glBegin(GL_POINTS);
 	for (const DrawablePoint &p : display_points)
 	{
-		glColor4f(p.color.x(), p.color.y(), p.color.z(), alpha);
-		glVertex3d(p.pos.x(), p.pos.y(), p.pos.z());
+		if(highlight)
+      		glColor4f(p.color.x(), p.color.y(), p.color.z(), p.a);
+    	else 
+      		glColor4f(p.color.x(), p.color.y(), p.color.z(), alpha);
+    	glVertex3d(p.pos.x(), p.pos.y(), p.pos.z());
 	}
 	glEnd();
 }
