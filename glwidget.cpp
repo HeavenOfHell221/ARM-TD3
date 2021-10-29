@@ -7,6 +7,9 @@
 
 #include <iostream>
 
+#include <fstream>
+using namespace std;
+
 GLWidget::GLWidget(QWidget *parent)
 	: QOpenGLWidget(parent), alpha(0.05), log2_zoom(0),
 	  view_type(ViewType::ORTHO), hide_empty_points(true)
@@ -81,6 +84,15 @@ void GLWidget::hideLayersAbove(int state){
 		hide_above = true;
 	updateDisplayPoints();
 	update();
+}
+
+void GLWidget::saveXYZ() {
+	ofstream MyFile("points.xyz");
+	for (const DrawablePoint &p : display_points)
+	{
+		MyFile << p.pos.x() << " " << p.pos.y() << " " << p.pos.z() << "\n";
+	}
+	MyFile.close();
 }
 
 void GLWidget::updateVolumicData(std::unique_ptr<VolumicData> new_data)

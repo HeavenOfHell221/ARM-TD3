@@ -42,6 +42,7 @@ public slots:
   void hideLayersAbove(int state);
   void hideLayersBelow(int state);
   void onColorModeChange(int state);
+  void saveXYZ();
 
 protected:
   struct DrawablePoint {

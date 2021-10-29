@@ -42,8 +42,8 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(window_center_slider, 2, 0, 1, 3);
   layout->addWidget(window_width_slider, 3, 0, 1, 3);
 
-  layout->addWidget(img_label, 4, 1, 7, 1);
-  layout->addWidget(gl_widget, 4, 2, 7, 1);
+  layout->addWidget(img_label, 4, 1, 6, 1);
+  layout->addWidget(gl_widget, 4, 2, 6, 1);
 
   layout->addWidget(hide_2d_image, 4, 0, 1, 1);
   layout->addWidget(hide_3d_image, 5, 0, 1, 1);
@@ -66,6 +66,11 @@ DicomViewer::DicomViewer(QWidget *parent)
   QAction *save_action = file_menu->addAction("&Save");
   save_action->setShortcut(QKeySequence::Save);
   QObject::connect(save_action, SIGNAL(triggered()), this, SLOT(save()));
+
+  QAction *saveXYZ_action = file_menu->addAction("&SaveXYZ");
+  saveXYZ_action->setShortcut(QKeySequence::SaveAs);
+  QObject::connect(saveXYZ_action, SIGNAL(triggered()), gl_widget, SLOT(saveXYZ()));
+
   QAction *help_action = file_menu->addAction("&Help");
   help_action->setShortcut(QKeySequence::HelpContents);
   QObject::connect(help_action, SIGNAL(triggered()), this, SLOT(showStats()));
