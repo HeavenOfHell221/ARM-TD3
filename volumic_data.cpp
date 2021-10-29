@@ -78,6 +78,7 @@ QVector3D VolumicData::getColorSegment(int segment, double c) {
     case 5: color = QVector3D(1, 0.7, 0); break;       // jaune
     case 6: color = QVector3D(0.2, 0.2, 1); break;   // bleu
     case 7: color = QVector3D(1, 0, 0); break;       // rouge
+    default: color = QVector3D(0, 0, 0); break;
   }
   return color;
 }
