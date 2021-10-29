@@ -29,15 +29,23 @@ public:
   void updateDisplayPoints();
 
   bool contours_mode;
+  bool highlight;
+  bool hide_below;
+  bool hide_above;
+  int curr_slice;
 
 public slots:
   void setAlpha(double new_alpha);
   void onContoursModeChange(int state);
+  void highlightActiveLayer(int state);
+  void hideLayersAbove(int state);
+  void hideLayersBelow(int state);
 
 protected:
   struct DrawablePoint {
     QVector3D pos;
     QVector3D color;
+    double a;
   };
 
   void initializeGL() override;
