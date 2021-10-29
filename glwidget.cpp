@@ -131,20 +131,25 @@ void GLWidget::updateDisplayPoints()
 	}
 	else if(hide_below && !hide_above)
 	{
-		idx_start = W * H * curr_slice;
+		idx_start = W * H * (curr_slice-1);
 		idx_end = W * H * D;
 	}
 	else if(!hide_below && hide_above)
 	{
 		idx_start = 0;
-		idx_end = W * H * (curr_slice+1);
+		idx_end = W * H * (curr_slice);
 	}
 	else if(hide_above && hide_below)
 	{
-		idx_start = W * H * curr_slice;
-		idx_end = W * H * (curr_slice+1);
+		idx_start = W * H * (curr_slice-1);
+		idx_end = W * H * (curr_slice);
 	}
-	display_points.reserve(idx_end - idx_start);
+
+	idx_end = std::min(idx_end, W*H*D);
+	int range = idx_end - idx_start;
+	if(range <= 0)
+		return;
+	display_points.reserve(range);
 
 	double cur_win_min;
 	double cur_win_max;
@@ -167,7 +172,7 @@ void GLWidget::updateDisplayPoints()
 					DrawablePoint p;
 					p.a = alpha;
 					if(highlight){
-      					if(idx>=curr_slice*W*H && idx<(curr_slice+1)*W*H)
+      					if(idx>=(curr_slice-1)*W*H && idx<(curr_slice)*W*H)
             				p.a = 1.0;   
     				}
 					p.color = volumic_data->getColorSegment(segment, c);
