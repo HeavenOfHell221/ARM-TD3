@@ -64,8 +64,8 @@ protected:
    */
   double modifiedDelta(double delta);
 
-  bool connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max, const bool colorMode);
-
+  bool connectivity(const int mode, const int idx, const int curr_segment, const int min, const int max);
+  void getWinMinMax(double* min, double* max);
 
   QPoint lastPos;
   float alpha;

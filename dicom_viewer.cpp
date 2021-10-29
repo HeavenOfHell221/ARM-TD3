@@ -49,8 +49,8 @@ DicomViewer::DicomViewer(QWidget *parent)
   layout->addWidget(hide_3d_image, 5, 0, 1, 1);
 
   layout->addWidget(highlight_active_layer, 6, 0, 1, 1);
-  layout->addWidget(hide_layers_below, 7, 0, 1, 1);
-  layout->addWidget(hide_layers_above, 8, 0, 1, 1);
+  layout->addWidget(hide_layers_above, 7, 0, 1, 1);
+  layout->addWidget(hide_layers_below, 8, 0, 1, 1);
 
   layout->addWidget(contours_mode, 9, 0, 1, 1);
   layout->addWidget(color_mode, 10, 0, 1, 1);
